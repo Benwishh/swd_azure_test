@@ -25,6 +25,165 @@
 	},
 	"resources": [
 		{
+			"name": "[concat(parameters('workspaceName'), '/Copy Data AW to DL')]",
+			"type": "Microsoft.Synapse/workspaces/pipelines",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"description": "Kompletter Copyjob aller Tabellen",
+				"activities": [
+					{
+						"name": "ForEach1",
+						"type": "ForEach",
+						"dependsOn": [
+							{
+								"activity": "Lookup1",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"items": {
+								"value": "@activity('Lookup1').output.value",
+								"type": "Expression"
+							},
+							"isSequential": true,
+							"activities": [
+								{
+									"name": "Copy data1",
+									"type": "Copy",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "0.01:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"source": {
+											"type": "AzureSqlSource",
+											"queryTimeout": "02:00:00",
+											"partitionOption": "None"
+										},
+										"sink": {
+											"type": "DelimitedTextSink",
+											"storeSettings": {
+												"type": "AzureBlobFSWriteSettings"
+											},
+											"formatSettings": {
+												"type": "DelimitedTextWriteSettings",
+												"quoteAllText": true,
+												"fileExtension": ".txt"
+											}
+										},
+										"enableStaging": false,
+										"translator": {
+											"type": "TabularTranslator",
+											"typeConversion": true,
+											"typeConversionSettings": {
+												"allowDataTruncation": true,
+												"treatBooleanAsNumber": false
+											}
+										}
+									},
+									"inputs": [
+										{
+											"referenceName": "AW_Template",
+											"type": "DatasetReference",
+											"parameters": {
+												"DB_Schema": {
+													"value": "@item().Schema",
+													"type": "Expression"
+												},
+												"DB_Tabelle": {
+													"value": "@item().Table",
+													"type": "Expression"
+												}
+											}
+										}
+									],
+									"outputs": [
+										{
+											"referenceName": "DL_Template_CSV",
+											"type": "DatasetReference",
+											"parameters": {
+												"DL_Schicht": "3_Replication",
+												"DL_Datenquelle": "SQLDB_Adventureworks",
+												"DL_OrdnerName": {
+													"value": "@item().Table",
+													"type": "Expression"
+												},
+												"DL_Jahr": {
+													"value": "@utcNow('yyyy')",
+													"type": "Expression"
+												},
+												"DL_Monat": "@utcNow('MM')",
+												"DL_Tag": "@utcNow('dd')",
+												"DL_Dateiname": {
+													"value": "@concat(item().Table,'.csv')",
+													"type": "Expression"
+												}
+											}
+										}
+									]
+								}
+							]
+						}
+					},
+					{
+						"name": "Lookup1",
+						"type": "Lookup",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "DelimitedTextSource",
+								"storeSettings": {
+									"type": "AzureBlobFSReadSettings",
+									"recursive": true,
+									"enablePartitionDiscovery": false
+								},
+								"formatSettings": {
+									"type": "DelimitedTextReadSettings"
+								}
+							},
+							"dataset": {
+								"referenceName": "AW_Meta",
+								"type": "DatasetReference",
+								"parameters": {}
+							},
+							"firstRowOnly": false
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"variables": {
+					"test": {
+						"type": "Array"
+					}
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/datasets/AW_Meta')]",
+				"[concat(variables('workspaceId'), '/datasets/AW_Template')]",
+				"[concat(variables('workspaceId'), '/datasets/DL_Template_CSV')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('workspaceName'), '/Copy Data SalesOrderDetail')]",
 			"type": "Microsoft.Synapse/workspaces/pipelines",
 			"apiVersion": "2019-06-01-preview",
@@ -792,6 +951,42 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('workspaceName'), '/AW_Meta')]",
+			"type": "Microsoft.Synapse/workspaces/datasets",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "synw-swd-de-imm001-WorkspaceDefaultStorage",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": "AW_Tabellen.csv",
+						"folderPath": "z_Landing_Zone/Dienstleister_X",
+						"fileSystem": "data"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/linkedServices/synw-swd-de-imm001-WorkspaceDefaultStorage')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('workspaceName'), '/AW_SalesOrderDetail')]",
 			"type": "Microsoft.Synapse/workspaces/datasets",
 			"apiVersion": "2019-06-01-preview",
@@ -1005,12 +1200,22 @@
 						"type": "string"
 					}
 				},
+				"folder": {
+					"name": "Template"
+				},
 				"annotations": [],
 				"type": "DelimitedText",
 				"typeProperties": {
 					"location": {
 						"type": "AzureBlobFSLocation",
-						"folderPath": "3_Replication/SQLDB_AdventureWorks",
+						"fileName": {
+							"value": "@dataset().DL_Dateiname",
+							"type": "Expression"
+						},
+						"folderPath": {
+							"value": "@concat(dataset().DL_Schicht,'/',dataset().DL_Datenquelle,'/',\ndataset().DL_OrdnerName,'/', dataset().DL_Jahr,'/',\ndataset().DL_Monat,'/',dataset().DL_Tag)",
+							"type": "Expression"
+						},
 						"fileSystem": "data"
 					},
 					"columnDelimiter": ",",
