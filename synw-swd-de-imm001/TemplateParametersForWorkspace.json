@@ -1,0 +1,18 @@
+{
+	"$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"workspaceName": {
+			"value": "synw-swd-de-imm001"
+		},
+		"Adventure_Works_SQL_Datenbank_connectionString": {
+			"value": ""
+		},
+		"synw-swd-de-imm001-WorkspaceDefaultSqlServer_connectionString": {
+			"value": ""
+		},
+		"synw-swd-de-imm001-WorkspaceDefaultStorage_properties_typeProperties_url": {
+			"value": "https://stswdde001.dfs.core.windows.net"
+		}
+	}
+}
