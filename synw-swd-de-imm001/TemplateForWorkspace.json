@@ -42,7 +42,16 @@
 							"secureOutput": false,
 							"secureInput": false
 						},
-						"userProperties": [],
+						"userProperties": [
+							{
+								"name": "Source",
+								"value": "@{'<schemaName>'}.@{'<tableName>'}"
+							},
+							{
+								"name": "Destination",
+								"value": "data/3_Replication/SQLDB_AdventureWorks/"
+							}
+						],
 						"typeProperties": {
 							"source": {
 								"type": "AzureSqlSource",
@@ -196,7 +205,7 @@
 						],
 						"outputs": [
 							{
-								"referenceName": "DL_SalesOrderDetail",
+								"referenceName": "DL_AdventureWorks_Data",
 								"type": "DatasetReference",
 								"parameters": {}
 							}
@@ -439,7 +448,7 @@
 						],
 						"outputs": [
 							{
-								"referenceName": "DL_SalesOrderDetail",
+								"referenceName": "DL_AdventureWorks_Data",
 								"type": "DatasetReference",
 								"parameters": {}
 							}
@@ -610,7 +619,7 @@
 						],
 						"outputs": [
 							{
-								"referenceName": "DL_SalesOrderDetail",
+								"referenceName": "DL_AdventureWorks_Data",
 								"type": "DatasetReference",
 								"parameters": {}
 							}
@@ -625,7 +634,7 @@
 			},
 			"dependsOn": [
 				"[concat(variables('workspaceId'), '/datasets/AW_SalesOrderDetail')]",
-				"[concat(variables('workspaceId'), '/datasets/DL_SalesOrderDetail')]",
+				"[concat(variables('workspaceId'), '/datasets/DL_AdventureWorks_Data')]",
 				"[concat(variables('workspaceId'), '/datasets/AW_Customer')]",
 				"[concat(variables('workspaceId'), '/datasets/AW_Address')]"
 			]
@@ -638,6 +647,9 @@
 				"linkedServiceName": {
 					"referenceName": "Adventure_Works_SQL_Datenbank",
 					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "Quellen"
 				},
 				"annotations": [],
 				"type": "AzureSqlTable",
@@ -699,6 +711,9 @@
 				"linkedServiceName": {
 					"referenceName": "Adventure_Works_SQL_Datenbank",
 					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "Quellen"
 				},
 				"annotations": [],
 				"type": "AzureSqlTable",
@@ -785,6 +800,9 @@
 					"referenceName": "Adventure_Works_SQL_Datenbank",
 					"type": "LinkedServiceReference"
 				},
+				"folder": {
+					"name": "Quellen"
+				},
 				"annotations": [],
 				"type": "AzureSqlTable",
 				"schema": [
@@ -847,13 +865,94 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('workspaceName'), '/DL_SalesOrderDetail')]",
+			"name": "[concat(parameters('workspaceName'), '/AW_Template')]",
+			"type": "Microsoft.Synapse/workspaces/datasets",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "Adventure_Works_SQL_Datenbank",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"DB_Schema": {
+						"type": "string"
+					},
+					"DB_Tabelle": {
+						"type": "string"
+					}
+				},
+				"folder": {
+					"name": "Template"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "AddressID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "AddressLine1",
+						"type": "nvarchar"
+					},
+					{
+						"name": "AddressLine2",
+						"type": "nvarchar"
+					},
+					{
+						"name": "City",
+						"type": "nvarchar"
+					},
+					{
+						"name": "StateProvince",
+						"type": "nvarchar"
+					},
+					{
+						"name": "CountryRegion",
+						"type": "nvarchar"
+					},
+					{
+						"name": "PostalCode",
+						"type": "nvarchar"
+					},
+					{
+						"name": "rowguid",
+						"type": "uniqueidentifier"
+					},
+					{
+						"name": "ModifiedDate",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					}
+				],
+				"typeProperties": {
+					"schema": {
+						"value": "@dataset().DB_Schema",
+						"type": "Expression"
+					},
+					"table": {
+						"value": "@dataset().DB_Tabelle",
+						"type": "Expression"
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/linkedServices/Adventure_Works_SQL_Datenbank')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/DL_AdventureWorks_Data')]",
 			"type": "Microsoft.Synapse/workspaces/datasets",
 			"apiVersion": "2019-06-01-preview",
 			"properties": {
 				"linkedServiceName": {
 					"referenceName": "synw-swd-de-imm001-WorkspaceDefaultStorage",
 					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "Senken"
 				},
 				"annotations": [],
 				"type": "DelimitedText",
