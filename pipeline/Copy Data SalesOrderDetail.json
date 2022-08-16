@@ -14,7 +14,16 @@
 					"secureOutput": false,
 					"secureInput": false
 				},
-				"userProperties": [],
+				"userProperties": [
+					{
+						"name": "Source",
+						"value": "@{'<schemaName>'}.@{'<tableName>'}"
+					},
+					{
+						"name": "Destination",
+						"value": "data/3_Replication/SQLDB_AdventureWorks/"
+					}
+				],
 				"typeProperties": {
 					"source": {
 						"type": "AzureSqlSource",

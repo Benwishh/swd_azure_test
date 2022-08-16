@@ -5,6 +5,9 @@
 			"referenceName": "synw-swd-de-imm001-WorkspaceDefaultStorage",
 			"type": "LinkedServiceReference"
 		},
+		"folder": {
+			"name": "Senken"
+		},
 		"annotations": [],
 		"type": "DelimitedText",
 		"typeProperties": {

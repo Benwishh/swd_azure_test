@@ -5,6 +5,9 @@
 			"referenceName": "Adventure_Works_SQL_Datenbank",
 			"type": "LinkedServiceReference"
 		},
+		"folder": {
+			"name": "Quellen"
+		},
 		"annotations": [],
 		"type": "AzureSqlTable",
 		"schema": [
