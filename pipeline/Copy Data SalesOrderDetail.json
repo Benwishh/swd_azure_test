@@ -167,7 +167,7 @@
 				],
 				"outputs": [
 					{
-						"referenceName": "DL_SalesOrderDetail",
+						"referenceName": "DL_AdventureWorks_Data",
 						"type": "DatasetReference"
 					}
 				]
@@ -408,7 +408,7 @@
 				],
 				"outputs": [
 					{
-						"referenceName": "DL_SalesOrderDetail",
+						"referenceName": "DL_AdventureWorks_Data",
 						"type": "DatasetReference"
 					}
 				]
@@ -577,7 +577,7 @@
 				],
 				"outputs": [
 					{
-						"referenceName": "DL_SalesOrderDetail",
+						"referenceName": "DL_AdventureWorks_Data",
 						"type": "DatasetReference"
 					}
 				]

@@ -1,5 +1,5 @@
 {
-	"name": "DL_SalesOrderDetail",
+	"name": "DL_AdventureWorks_Data",
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "synw-swd-de-imm001-WorkspaceDefaultStorage",
