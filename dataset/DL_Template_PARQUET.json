@@ -41,7 +41,7 @@
 					"type": "Expression"
 				},
 				"folderPath": {
-					"value": "@concat(dataset().DL_Schicht,'/',dataset().DL_Datenquelle,'/',\ndataset().DL_OrdnerName,'/', dataset().DL_Jahr,'/',\ndataset().DL_Monat,'/',dataset().DL_Tag)",
+					"value": "@concat(dataset().DL_Schicht, '/',  dataset().DL_OrdnerName, \n'/',  dataset().DL_Jahr, '/', dataset().DL_Monat, '/',  \ndataset().DL_Tag)",
 					"type": "Expression"
 				},
 				"fileSystem": "data"

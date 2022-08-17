@@ -41,14 +41,12 @@
 									"partitionOption": "None"
 								},
 								"sink": {
-									"type": "DelimitedTextSink",
+									"type": "ParquetSink",
 									"storeSettings": {
 										"type": "AzureBlobFSWriteSettings"
 									},
 									"formatSettings": {
-										"type": "DelimitedTextWriteSettings",
-										"quoteAllText": true,
-										"fileExtension": ".txt"
+										"type": "ParquetWriteSettings"
 									}
 								},
 								"enableStaging": false,
@@ -79,29 +77,19 @@
 							],
 							"outputs": [
 								{
-									"referenceName": "DL_Template_CSV",
+									"referenceName": "DL_TEC_Template_PARQUET",
 									"type": "DatasetReference",
 									"parameters": {
-										"DL_Schicht": "3_Replication",
-										"DL_Datenquelle": "SQLDB_Adventureworks",
-										"DL_OrdnerName": {
-											"value": "@item().Table",
-											"type": "Expression"
-										},
-										"DL_Jahr": {
-											"value": "@utcNow('yyyy')",
-											"type": "Expression"
-										},
-										"DL_Monat": {
-											"value": "@utcNow('MM')",
-											"type": "Expression"
-										},
-										"DL_Tag": {
-											"value": "@utcNow('dd')",
-											"type": "Expression"
-										},
+										"DL_Schicht": "3_replication",
+										"DL_Jahr": "2022",
+										"DL_Monat": "08",
+										"DL_Tag": "17",
 										"DL_Dateiname": {
 											"value": "@concat(item().Table,'.parquet')",
+											"type": "Expression"
+										},
+										"DL_Ordnername": {
+											"value": "@item().Table",
 											"type": "Expression"
 										}
 									}
