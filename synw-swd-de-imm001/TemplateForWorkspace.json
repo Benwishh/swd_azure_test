@@ -228,14 +228,12 @@
 											"partitionOption": "None"
 										},
 										"sink": {
-											"type": "DelimitedTextSink",
+											"type": "ParquetSink",
 											"storeSettings": {
 												"type": "AzureBlobFSWriteSettings"
 											},
 											"formatSettings": {
-												"type": "DelimitedTextWriteSettings",
-												"quoteAllText": true,
-												"fileExtension": ".txt"
+												"type": "ParquetWriteSettings"
 											}
 										},
 										"enableStaging": false,
@@ -266,29 +264,19 @@
 									],
 									"outputs": [
 										{
-											"referenceName": "DL_Template_CSV",
+											"referenceName": "DL_TEC_Template_PARQUET",
 											"type": "DatasetReference",
 											"parameters": {
-												"DL_Schicht": "3_Replication",
-												"DL_Datenquelle": "SQLDB_Adventureworks",
-												"DL_OrdnerName": {
-													"value": "@item().Table",
-													"type": "Expression"
-												},
-												"DL_Jahr": {
-													"value": "@utcNow('yyyy')",
-													"type": "Expression"
-												},
-												"DL_Monat": {
-													"value": "@utcNow('MM')",
-													"type": "Expression"
-												},
-												"DL_Tag": {
-													"value": "@utcNow('dd')",
-													"type": "Expression"
-												},
+												"DL_Schicht": "3_replication",
+												"DL_Jahr": "2022",
+												"DL_Monat": "08",
+												"DL_Tag": "17",
 												"DL_Dateiname": {
 													"value": "@concat(item().Table,'.parquet')",
+													"type": "Expression"
+												},
+												"DL_Ordnername": {
+													"value": "@item().Table",
 													"type": "Expression"
 												}
 											}
@@ -345,7 +333,7 @@
 			"dependsOn": [
 				"[concat(variables('workspaceId'), '/datasets/AW_Meta')]",
 				"[concat(variables('workspaceId'), '/datasets/AW_Template')]",
-				"[concat(variables('workspaceId'), '/datasets/DL_Template_CSV')]"
+				"[concat(variables('workspaceId'), '/datasets/DL_TEC_Template_PARQUET')]"
 			]
 		},
 		{
@@ -719,6 +707,61 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('workspaceName'), '/DL_TEC_Template_PARQUET')]",
+			"type": "Microsoft.Synapse/workspaces/datasets",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "synw-swd-de-imm001-WorkspaceDefaultStorage",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"DL_Schicht": {
+						"type": "string"
+					},
+					"DL_Jahr": {
+						"type": "string"
+					},
+					"DL_Monat": {
+						"type": "string"
+					},
+					"DL_Tag": {
+						"type": "string"
+					},
+					"DL_Dateiname": {
+						"type": "string"
+					},
+					"DL_Ordnername": {
+						"type": "string"
+					}
+				},
+				"folder": {
+					"name": "Template"
+				},
+				"annotations": [],
+				"type": "Parquet",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": {
+							"value": "@dataset().DL_Dateiname",
+							"type": "Expression"
+						},
+						"folderPath": {
+							"value": "@concat(dataset().DL_Schicht,'/',\ndataset().DL_OrdnerName,'/', dataset().DL_Jahr,'/',\ndataset().DL_Monat,'/',dataset().DL_Tag)",
+							"type": "Expression"
+						},
+						"fileSystem": "data"
+					},
+					"compressionCodec": "snappy"
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/linkedServices/synw-swd-de-imm001-WorkspaceDefaultStorage')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('workspaceName'), '/DL_Template_CSV')]",
 			"type": "Microsoft.Synapse/workspaces/datasets",
 			"apiVersion": "2019-06-01-preview",
@@ -852,7 +895,7 @@
 							"type": "Expression"
 						},
 						"folderPath": {
-							"value": "@concat(dataset().DL_Schicht,'/',dataset().DL_Datenquelle,'/',\ndataset().DL_OrdnerName,'/', dataset().DL_Jahr,'/',\ndataset().DL_Monat,'/',dataset().DL_Tag)",
+							"value": "@concat(dataset().DL_Schicht, '/',  dataset().DL_OrdnerName, \n'/',  dataset().DL_Jahr, '/', dataset().DL_Monat, '/',  \ndataset().DL_Tag)",
 							"type": "Expression"
 						},
 						"fileSystem": "data"
@@ -947,16 +990,6 @@
 			"dependsOn": []
 		},
 		{
-			"name": "[concat(parameters('workspaceName'), '/WorkspaceSystemIdentity')]",
-			"type": "Microsoft.Synapse/workspaces/credentials",
-			"apiVersion": "2019-06-01-preview",
-			"properties": {
-				"type": "ManagedIdentity",
-				"typeProperties": {}
-			},
-			"dependsOn": []
-		},
-		{
 			"name": "[concat(parameters('workspaceName'), '/Dataflow1')]",
 			"type": "Microsoft.Synapse/workspaces/dataflows",
 			"apiVersion": "2019-06-01-preview",
@@ -1004,59 +1037,14 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('workspaceName'), '/DL_TEC_Template_PARQUET')]",
-			"type": "Microsoft.Synapse/workspaces/datasets",
+			"name": "[concat(parameters('workspaceName'), '/WorkspaceSystemIdentity')]",
+			"type": "Microsoft.Synapse/workspaces/credentials",
 			"apiVersion": "2019-06-01-preview",
 			"properties": {
-				"linkedServiceName": {
-					"referenceName": "synw-swd-de-imm001-WorkspaceDefaultStorage",
-					"type": "LinkedServiceReference"
-				},
-				"parameters": {
-					"DL_Schicht": {
-						"type": "string"
-					},
-					"DL_Jahr": {
-						"type": "string"
-					},
-					"DL_Monat": {
-						"type": "string"
-					},
-					"DL_Tag": {
-						"type": "string"
-					},
-					"DL_Dateiname": {
-						"type": "string"
-					},
-					"DL_Ordnername": {
-						"type": "string"
-					}
-				},
-				"folder": {
-					"name": "Template"
-				},
-				"annotations": [],
-				"type": "Parquet",
-				"typeProperties": {
-					"location": {
-						"type": "AzureBlobFSLocation",
-						"fileName": {
-							"value": "@dataset().DL_Dateiname",
-							"type": "Expression"
-						},
-						"folderPath": {
-							"value": "@concat(dataset().DL_Schicht,'/',\ndataset().DL_OrdnerName,'/', dataset().DL_Jahr,'/',\ndataset().DL_Monat,'/',dataset().DL_Tag)",
-							"type": "Expression"
-						},
-						"fileSystem": "data"
-					},
-					"compressionCodec": "snappy"
-				},
-				"schema": []
+				"type": "ManagedIdentity",
+				"typeProperties": {}
 			},
-			"dependsOn": [
-				"[concat(variables('workspaceId'), '/linkedServices/synw-swd-de-imm001-WorkspaceDefaultStorage')]"
-			]
+			"dependsOn": []
 		}
 	]
 }
