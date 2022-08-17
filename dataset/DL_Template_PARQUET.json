@@ -1,0 +1,53 @@
+{
+	"name": "DL_Template_PARQUET",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "synw-swd-de-imm001-WorkspaceDefaultStorage",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"DL_Schicht": {
+				"type": "string"
+			},
+			"DL_Datenquelle": {
+				"type": "string"
+			},
+			"DL_OrdnerName": {
+				"type": "string"
+			},
+			"DL_Jahr": {
+				"type": "string"
+			},
+			"DL_Monat": {
+				"type": "string"
+			},
+			"DL_Tag": {
+				"type": "string"
+			},
+			"DL_Dateiname": {
+				"type": "string"
+			}
+		},
+		"folder": {
+			"name": "Template"
+		},
+		"annotations": [],
+		"type": "Parquet",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileName": {
+					"value": "@dataset().DL_Dateiname",
+					"type": "Expression"
+				},
+				"folderPath": {
+					"value": "@concat(dataset().DL_Schicht,'/',dataset().DL_Datenquelle,'/',\ndataset().DL_OrdnerName,'/', dataset().DL_Jahr,'/',\ndataset().DL_Monat,'/',dataset().DL_Tag)",
+					"type": "Expression"
+				},
+				"fileSystem": "date"
+			},
+			"compressionCodec": "snappy"
+		},
+		"schema": []
+	}
+}
