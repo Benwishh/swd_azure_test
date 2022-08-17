@@ -1,5 +1,5 @@
 {
-	"name": "DL_Template_PARQUET",
+	"name": "DL_TEC_Template_PARQUET",
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "synw-swd-de-imm001-WorkspaceDefaultStorage",
@@ -7,12 +7,6 @@
 		},
 		"parameters": {
 			"DL_Schicht": {
-				"type": "string"
-			},
-			"DL_Datenquelle": {
-				"type": "string"
-			},
-			"DL_OrdnerName": {
 				"type": "string"
 			},
 			"DL_Jahr": {
@@ -25,6 +19,9 @@
 				"type": "string"
 			},
 			"DL_Dateiname": {
+				"type": "string"
+			},
+			"DL_Ordnername": {
 				"type": "string"
 			}
 		},
@@ -41,7 +38,7 @@
 					"type": "Expression"
 				},
 				"folderPath": {
-					"value": "@concat(dataset().DL_Schicht,'/',dataset().DL_Datenquelle,'/',\ndataset().DL_OrdnerName,'/', dataset().DL_Jahr,'/',\ndataset().DL_Monat,'/',dataset().DL_Tag)",
+					"value": "@concat(dataset().DL_Schicht,'/',\ndataset().DL_OrdnerName,'/', dataset().DL_Jahr,'/',\ndataset().DL_Monat,'/',dataset().DL_Tag)",
 					"type": "Expression"
 				},
 				"fileSystem": "data"
